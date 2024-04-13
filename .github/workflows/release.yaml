@@ -1,12 +1,13 @@
 name: Release
 
 on:
-  push:
-    branches:
-      - "master"
-    paths:
-      - "CHANGELOG.md"
+  repository_dispatch:
   workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to release'
+        required: true
+        default: 'v0.0.1'
 
 jobs:
  android:
@@ -80,8 +81,8 @@ jobs:
           
       - uses: softprops/action-gh-release@v1
         with:
-          name: ${{ env.ver_name }}
-          tag_name: ${{ env.ver_name }}
+          name: ${{ github.event.inputs.tag }}
+          tag_name: ${{ github.event.inputs.tag }}
           body_path: ${{ github.workspace }}/CHANGELOG.md
           draft: false
           prerelease: false
