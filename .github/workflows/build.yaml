@@ -55,28 +55,28 @@ jobs:
           name: "AList"
           path: "${{ github.workspace }}/android/app/libs/*.aar"
 
-      - name: Init Signature
-        run: |
-          touch local.properties
-          cd android
-          echo ALIAS_NAME='${{ secrets.ALIAS_NAME }}' >> local.properties
-          echo ALIAS_PASSWORD='${{ secrets.ALIAS_PASSWORD }}' >> local.properties
-          echo KEY_PASSWORD='${{ secrets.KEY_PASSWORD }}' >> local.properties
-          echo KEY_PATH='./key.jks' >> local.properties
-          # 从Secrets读取无换行符Base64解码, 然后保存到到app/key.jks
-          echo ${{ secrets.KEY_STORE }} | base64 --decode > $GITHUB_WORKSPACE/android/app/key.jks
+      # - name: Init Signature
+      #   run: |
+      #     touch local.properties
+      #     cd android
+      #     echo ALIAS_NAME='${{ secrets.ALIAS_NAME }}' >> local.properties
+      #     echo ALIAS_PASSWORD='${{ secrets.ALIAS_PASSWORD }}' >> local.properties
+      #     echo KEY_PASSWORD='${{ secrets.KEY_PASSWORD }}' >> local.properties
+      #     echo KEY_PATH='./key.jks' >> local.properties
+      #     # 从Secrets读取无换行符Base64解码, 然后保存到到app/key.jks
+      #     echo ${{ secrets.KEY_STORE }} | base64 --decode > $GITHUB_WORKSPACE/android/app/key.jks
 
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.16.7'
-      - run: flutter build apk --split-per-abi --release
+      - run: flutter build apk --split-per-abi --debug
 
       - name: Upload missing_rules.txt
         if: failure() && steps.gradle.outcome != 'success'
         uses: actions/upload-artifact@v3
         with:
           name: "missing_rules"
-          path: "${{ github.workspace }}/build/app/outputs/mapping/release/missing_rules.txt"
+          path: "${{ github.workspace }}/build/app/outputs/mapping/debug/missing_rules.txt"
 
       - name: Init APP Version Name
         run: |
