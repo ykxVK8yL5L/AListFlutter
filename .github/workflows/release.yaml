@@ -28,13 +28,18 @@ jobs:
 
       - uses: actions/setup-go@v5
         with:
-          go-version: 1.21.5
+          go-version: 1.22
           cache-dependency-path: ${{ github.workspace }}/alist-lib/alist/go.sum
 
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
+
+      - uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r25c
 
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v3
@@ -45,6 +50,8 @@ jobs:
             chmod +x *.sh
             ./init_gomobile.sh
             ./gobind.sh
+        env:
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
 
       - name: Upload AAR
         uses: actions/upload-artifact@v3
